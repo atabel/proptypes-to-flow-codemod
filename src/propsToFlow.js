@@ -1,8 +1,8 @@
 import 'babel-polyfill';
 
-import { flow, map, reduce, findIndex, findLastIndex, find } from 'lodash/fp';
-import handleClassPropTypes from './tranformers/handleClassPropTypes';
-import handleFunctionPropTypes from './tranformers/handleFunctionPropTypes';
+import { flow, map, reduce, findIndex, find } from 'lodash/fp';
+import handleClassPropTypes, { addTypeAnnotationToClass } from './tranformers/handleClassPropTypes';
+import handleFunctionPropTypes, { addTypeAnnotationToFunction } from './tranformers/handleFunctionPropTypes';
 import { isReactType, isImportDeclaration, isImportDeclarationReact } from './util/typeHelpers';
 
 const addFlowComment = (j, ast) => {
@@ -29,20 +29,27 @@ const addFlowComment = (j, ast) => {
     });
 };
 
-const addTypeAliases = (j, ast, typeAliases) =>
-  typeAliases.forEach(typeAlias => {
-    ast
-      .find(j.Program)
-      .replaceWith(path => {
-        const { node } = path;
-        const indexFrom = findLastIndex(isImportDeclaration, node.body);
-        node.body.splice(indexFrom + 1, 0, typeAlias);
-        return node;
-      });
+const addTypeAliases = (j, typeAliases) => {
+  typeAliases.forEach(({
+    node, path, componentName, flowPropTypes,
+  }) => {
+    const typeAliasName = (typeAliases.length > 1 ? `${componentName}Props` : 'Props');
+
+    if (node.type === 'ClassDeclaration') {
+      addTypeAnnotationToClass(j, node, typeAliasName);
+    } else {
+      addTypeAnnotationToFunction(j, node, typeAliasName);
+    }
+
+    j(path).replaceWith([
+      j.typeAlias(j.identifier(typeAliasName), null, flowPropTypes),
+      path.node,
+    ]);
   });
+};
 
 const getReactTypes = (j, typeAlias) => {
-  const objectAnnotation = typeAlias.right;
+  const objectAnnotation = typeAlias.flowPropTypes;
   return reduce((types, property) => {
     const genericTypes = j(property).find(j.GenericTypeAnnotation).nodes();
     if (!genericTypes.length) {
@@ -106,7 +113,7 @@ const transformer = (fileInfo, { jscodeshift }, options) => {
     ...handleClassPropTypes(jscodeshift, ast, options),
     ...handleFunctionPropTypes(jscodeshift, ast, options),
   ];
-  addTypeAliases(jscodeshift, ast, typeAliases);
+  addTypeAliases(jscodeshift, typeAliases);
   addTypeImport(jscodeshift, ast, typeAliases);
 
   if (options['remove-prop-types']) {

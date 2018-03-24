@@ -1,26 +1,7 @@
-// @flow
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import type { Node } from 'react';
 
-type TooltipProps = {
-  headline: string,
-  children?: Node,
-  text?: string,
-  shouldBeShown?: boolean,
-  icon?: 'default' | 'custom',
-  time?: number | string,
-  size: {
-    width: number,
-    height: number,
-  },
-  fonts?: string[],
-  onShow?: Function,
-  position?: {},
-  colors?: any[],
-};
-
-class Tooltip extends Component<TooltipProps> {
+class Tooltip extends Component {
   static propTypes = {
     headline: PropTypes.string.isRequired,
     children: PropTypes.node,
@@ -45,6 +26,42 @@ class Tooltip extends Component<TooltipProps> {
   constructor(props) {
     super(props);
   }
+
+  render() {
+    return <div />
+  }
+}
+
+class OtherComponent extends Component {
+  static propTypes = {
+    a: PropTypes.string,
+    b: PropTypes.number,
+  };
+
+  render() {
+    return <div />
+  }
+}
+
+const FunctionalComp = (props) => <div />;
+FunctionalComp.propTypes = {
+  c: PropTypes.string.isRequired,
+  d: PropTypes.number,
+};
+
+function FunctionalComp2(props) {
+  return <div />;
+}
+FunctionalComp2.propTypes = {
+  e: PropTypes.string,
+  f: PropTypes.number.isRequired,
+};
+
+class ClassComponent3 extends Component {
+  static propTypes = {
+    g: PropTypes.string,
+    h: PropTypes.number,
+  };
 
   render() {
     return <div />

@@ -1,5 +1,5 @@
 // @flow
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import type { Node } from 'react';
 
 type Props = {
@@ -19,7 +19,7 @@ type Props = {
   colors?: any[],
 };
 
-class Tooltip extends Component<Props> {
+class Tooltip extends PureComponent<Props> {
   static defaultProps = {
     headline: 'Test'
   };
@@ -29,6 +29,6 @@ class Tooltip extends Component<Props> {
   }
 
   render() {
-    return <div />;
+    return <div />
   }
 }

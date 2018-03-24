@@ -112,12 +112,13 @@ const getObjectPropertiesFlowTypes = (j, objectNode, alwaysRequired) =>
     };
   }, objectNode.properties);
 
-export default (j, propTypesObjectNode, ast, name) => {
+export default (j, propTypesObjectNode, ast, componentName, node, path) => {
   const types = getObjectPropertiesFlowTypes(j, propTypesObjectNode);
 
-  return j.typeAlias(
-    j.identifier(name),
-    null,
-    j.objectTypeAnnotation(createFlowObjectProperties(j, types)),
-  );
+  return {
+    componentName,
+    node,
+    path,
+    flowPropTypes: j.objectTypeAnnotation(createFlowObjectProperties(j, types)),
+  };
 };

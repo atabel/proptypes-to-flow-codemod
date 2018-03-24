@@ -2,16 +2,7 @@ import { get } from 'lodash';
 import isReactClass from '../util/isReactClass';
 import createTypeAnnotation from '../util/createTypeAnnotation';
 import getPropTypesStatement from '../util/getPropTypesStatement';
-import getTypeAliasName from '../util/getTypeAliasName';
 import { getPropTypesObject, removePropTypesVariableDeclaration } from '../util/propTypesObject';
-
-const getStaticPropTypes = (j, path) =>
-  j(path).find(j.ClassProperty, {
-    key: {
-      type: 'Identifier',
-      name: 'propTypes',
-    },
-  });
 
 const createPropsTypeAnnotation = (j, typeAliasName) =>
   j.genericTypeAnnotation(j.identifier(typeAliasName), null);
@@ -28,6 +19,23 @@ const createSuperTypeParameters = (j, typeParameteres, typeAliasName) => {
   }
   return j.typeParameterInstantiation([createPropsTypeAnnotation(j, typeAliasName)]);
 };
+
+/* eslint no-param-reassign: 0 */
+export const addTypeAnnotationToClass = (j, node, typeAliasName) => {
+  node.superTypeParameters = createSuperTypeParameters(
+    j,
+    node.superTypeParameters,
+    typeAliasName,
+  );
+};
+
+const getStaticPropTypes = (j, path) =>
+  j(path).find(j.ClassProperty, {
+    key: {
+      type: 'Identifier',
+      name: 'propTypes',
+    },
+  });
 
 const checkExistintgPropsType = ({ superTypeParameters }) =>
   superTypeParameters && superTypeParameters.params.length;
@@ -66,16 +74,7 @@ export default (j, ast, options) => {
     if (checkExistintgPropsType(node)) {
       return;
     }
-
-    const typeAliasName = getTypeAliasName(node.id.name);
-
-    typeAliases.push(createTypeAnnotation(j, propTypesObject, ast, typeAliasName));
-
-    node.superTypeParameters = createSuperTypeParameters(
-      j,
-      node.superTypeParameters,
-      typeAliasName,
-    );
+    typeAliases.push(createTypeAnnotation(j, propTypesObject, ast, node.id.name, node, path));
   });
 
   return typeAliases;

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import type { Node } from 'react';
 import PropTypes from 'prop-types';
 
-type TooltipProps = {
+type Props = {
   headline: string,
   children?: Node,
   text?: string,
@@ -20,7 +20,7 @@ type TooltipProps = {
   colors?: any[],
 };
 
-const Tooltip = (props: TooltipProps) => (
+const Tooltip = (props: Props) => (
   <div />
 );
 

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import type { Node } from 'react';
 import PropTypes from 'prop-types';
 
-type TooltipProps = {
+type Props = {
   headline?: any,
   children?: Node,
   text: string,
@@ -22,7 +22,7 @@ type TooltipProps = {
   arrowDirection?: any,
 };
 
-class Tooltip extends Component<TooltipProps> {
+class Tooltip extends Component<Props> {
   static propTypes = {
     headline: PropTypes.any,
     children: PropTypes.node,

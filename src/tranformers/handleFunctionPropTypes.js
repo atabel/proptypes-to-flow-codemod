@@ -1,17 +1,16 @@
 import { reduce } from 'lodash/fp';
 import getPropTypesStatement from '../util/getPropTypesStatement';
 import createTypeAnnotation from '../util/createTypeAnnotation';
-import getTypeAliasName from '../util/getTypeAliasName';
 import { isIdentifier, isBlockStatement } from '../util/typeHelpers';
 import { getPropTypesObject, removePropTypesVariableDeclaration } from '../util/propTypesObject';
 
-const buildFunctionInfo = (name, func) => ({ name, func });
+const buildFunctionInfo = (name, funcNode, path) => ({ name, funcNode, path });
 
 const getFunctionDeclarations = (j, ast) =>
   ast
     .find(j.FunctionDeclaration)
-    .nodes()
-    .map(node => buildFunctionInfo(node.id.name, node));
+    .paths()
+    .map(path => buildFunctionInfo(path.node.id.name, path.node, path));
 
 const getFunctionExpressions = (j, ast) =>
   ast
@@ -20,8 +19,8 @@ const getFunctionExpressions = (j, ast) =>
         type: 'FunctionExpression',
       },
     })
-    .nodes()
-    .map(node => buildFunctionInfo(node.id.name, node.init));
+    .paths()
+    .map(path => buildFunctionInfo(path.node.id.name, path.node.init, path.parent));
 
 const getArrowFunctions = (j, ast) =>
   ast
@@ -30,8 +29,8 @@ const getArrowFunctions = (j, ast) =>
         type: 'ArrowFunctionExpression',
       },
     })
-    .nodes()
-    .map(node => buildFunctionInfo(node.id.name, node.init));
+    .paths()
+    .map(path => buildFunctionInfo(path.node.id.name, path.node.init, path.parent));
 
 const createVariableDeclaration = (j, kind, id, init) =>
   j.variableDeclaration(kind, [j.variableDeclarator(id, init)]);
@@ -44,7 +43,7 @@ const getPotentialFunctionalComponents = (j, ast) =>
   ];
 
 /* eslint no-param-reassign: 0 */
-const addTypeAnnotationToFunction = (j, funcNode, typeAliasName) => {
+export const addTypeAnnotationToFunction = (j, funcNode, typeAliasName) => {
   if (!funcNode.params.length) {
     return;
   }
@@ -73,7 +72,7 @@ const checkExistingPropsType = ({ params }) =>
 
 export default (j, ast, options) => {
   const potentialFunctionalComponents = getPotentialFunctionalComponents(j, ast);
-  const typeAliases = reduce((types, { name, func }) => {
+  const typeAliases = reduce((types, { name, funcNode, path }) => {
     const propTypesStatement = getPropTypesStatement(j, ast, name);
     if (!propTypesStatement.length) {
       return types;
@@ -89,16 +88,14 @@ export default (j, ast, options) => {
       removePropTypesVariableDeclaration(j, ast, propTypesStatement);
       propTypesStatement.remove();
     }
-    if (checkExistingPropsType(func)) {
+    if (checkExistingPropsType(funcNode)) {
       return types;
     }
-    const typeAliasName = getTypeAliasName(name);
-    const typeAnnotation = createTypeAnnotation(j, propTypesObject, ast, typeAliasName);
-    addTypeAnnotationToFunction(j, func, typeAliasName);
+
+    const typeAnnotation = createTypeAnnotation(j, propTypesObject, ast, name, funcNode, path);
 
     return [...types, typeAnnotation];
   }, [], potentialFunctionalComponents);
 
   return typeAliases;
 };
-

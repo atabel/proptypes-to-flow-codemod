@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import type { Node } from 'react';
 
-type TooltipProps = {
+type Props = {
   headline: string,
   children?: Node,
   text?: string,
@@ -19,7 +19,7 @@ type TooltipProps = {
   colors?: any[],
 };
 
-class Tooltip extends Component<TooltipProps> {
+class Tooltip extends Component<Props> {
   static defaultProps = {
     headline: 'Test'
   };
