@@ -1,6 +1,5 @@
 import { map, flow, some, isNull, negate } from 'lodash/fp';
 import flowTypes from '../constants/flowTypes';
-import isObjectPropTypes from './isObjectPropTypes';
 import { isMemberExpression, isLiteral } from './typeHelpers';
 
 const createAnyTypeAnnotation = j =>
@@ -102,7 +101,7 @@ const getObjectPropertiesFlowTypes = (j, objectNode, alwaysRequired) =>
   map(({ key, value }) => {
     let propType = value;
     let required = false;
-    if (isMemberExpression(value) && !isObjectPropTypes(value.object)) {
+    if (isMemberExpression(value) && value.property.name === 'isRequired') {
       propType = value.object;
       required = true;
     }
