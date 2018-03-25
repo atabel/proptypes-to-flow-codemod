@@ -62,7 +62,8 @@ const getReactTypes = (j, typeAlias) => {
   }, [], objectAnnotation.properties);
 };
 
-const getTypesToImport = j => reduce((types, alias) => [...types, ...getReactTypes(j, alias)], []);
+const getTypesToImport = j =>
+  reduce((types, alias) => Array.from(new Set([...types, ...getReactTypes(j, alias)])), []);
 
 const createImportSpecifiersForTypes = j => map(type => j.importSpecifier(j.identifier(type)));
 

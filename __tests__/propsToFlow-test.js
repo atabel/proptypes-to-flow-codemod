@@ -19,6 +19,7 @@ defineTest(__dirname, './src/propsToFlow', removePropTypesOptions, 'classPropTyp
 defineTest(__dirname, './src/propsToFlow', removePropTypesOptions, 'classPropTypesToFlow7');
 defineTest(__dirname, './src/propsToFlow', removePropTypesOptions, 'classPropTypesToFlow8');
 defineTest(__dirname, './src/propsToFlow', removePropTypesOptions, 'classPropTypesToFlow9');
+defineTest(__dirname, './src/propsToFlow', removePropTypesOptions, 'classPropTypesToFlow10');
 
 defineTest(__dirname, './src/propsToFlow', null, 'funcComponentPropTypes1');
 defineTest(__dirname, './src/propsToFlow', removePropTypesOptions, 'funcComponentPropTypes2');
