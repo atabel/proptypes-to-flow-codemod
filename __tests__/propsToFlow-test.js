@@ -27,5 +27,6 @@ defineTest(__dirname, './src/propsToFlow', removePropTypesOptions, 'funcComponen
 defineTest(__dirname, './src/propsToFlow', null, 'funcComponentPropTypes5');
 defineTest(__dirname, './src/propsToFlow', removePropTypesOptions, 'funcComponentPropTypes6');
 defineTest(__dirname, './src/propsToFlow', removePropTypesOptions, 'funcComponentPropTypes7');
+defineTest(__dirname, './src/propsToFlow', removePropTypesOptions, 'funcComponentPropTypes8');
 
 defineTest(__dirname, './src/propsToFlow', removePropTypesOptions, 'propTypesAsVariable1');

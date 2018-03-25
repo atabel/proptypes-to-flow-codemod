@@ -106,27 +106,53 @@ const removePropTypesImport = (j, ast) => {
 
 export const parser = 'flow';
 
-const transformer = (fileInfo, { jscodeshift }, options) => {
-  const ast = jscodeshift(fileInfo.source);
+const transformer = (fileInfo, { jscodeshift: j }, options) => {
+  const ast = j(fileInfo.source);
+
+  const funcTypeAliases = handleFunctionPropTypes(j, ast, options);
 
   const typeAliases = [
-    ...handleClassPropTypes(jscodeshift, ast, options),
-    ...handleFunctionPropTypes(jscodeshift, ast, options),
+    ...handleClassPropTypes(j, ast, options),
+    ...funcTypeAliases,
   ];
-  addTypeAliases(jscodeshift, typeAliases);
-  addTypeImport(jscodeshift, ast, typeAliases);
+  addTypeAliases(j, typeAliases);
+  addTypeImport(j, ast, typeAliases);
 
   if (options['remove-prop-types']) {
-    removePropTypesImport(jscodeshift, ast);
+    removePropTypesImport(j, ast);
   }
 
-  addFlowComment(jscodeshift, ast);
+  addFlowComment(j, ast);
 
-  return ast.toSource({
+  // we need to apply function params type annotations using string replacements
+  // because jscodeshift doesn't seem to work when applying typeAnnotation to ObjectPattern
+  const replacements = funcTypeAliases
+    .filter(({ node }) => node.params[0].type !== 'Identifier') // typeAnnotation works with simple identifiers
+    .map(({ node, componentName }) => {
+      const typeAliasName = (typeAliases.length > 1 ? `${componentName}Props` : 'Props');
+      const from = j(node).toSource({
+        lineTerminator: '\n',
+        quote: 'single',
+        trailingComma: true,
+      });
+      const paramsFrom = j(node.params).toSource({
+        lineTerminator: '\n',
+        quote: 'single',
+        trailingComma: true,
+      });
+      const paramsTo = `${paramsFrom}: ${typeAliasName}`;
+      const to = from.replace(paramsFrom, paramsTo);
+      return [from, to];
+    });
+
+  const src = ast.toSource({
     lineTerminator: '\n',
     quote: 'single',
     trailingComma: true,
   });
+
+  const output = replacements.reduce((outputSrc, [from, to]) => outputSrc.replace(from, to), src);
+  return output;
 };
 
 export default transformer;

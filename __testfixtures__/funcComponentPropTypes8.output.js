@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import type { Node } from 'react';
 
-type Props = {
+type TooltipProps = {
   headline: string,
   children?: Node,
   text?: string,
@@ -19,6 +19,15 @@ type Props = {
   colors?: any[],
 };
 
-const Tooltip = ({ text, icon }: Props) => (
+const Tooltip = ({ text, icon }: TooltipProps) => (
+  <div />
+);
+
+type Tooltip2Props = {
+  text?: string,
+  icon?: string,
+};
+
+const Tooltip2 = ({ text, icon }: Tooltip2Props) => (
   <div />
 );

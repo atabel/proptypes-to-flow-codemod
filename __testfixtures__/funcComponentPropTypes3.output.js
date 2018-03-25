@@ -19,8 +19,7 @@ type Props = {
   colors?: any[],
 };
 
-const Tooltip = (props: Props) => {
-  const { text, icon } = props;
+const Tooltip = ({ text, icon }: Props) => {
   if (!text) {
     return null;
   }

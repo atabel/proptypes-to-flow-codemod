@@ -1,7 +1,7 @@
 import { reduce } from 'lodash/fp';
 import getPropTypesStatement from '../util/getPropTypesStatement';
 import createTypeAnnotation from '../util/createTypeAnnotation';
-import { isIdentifier, isBlockStatement } from '../util/typeHelpers';
+import { isIdentifier } from '../util/typeHelpers';
 import { getPropTypesObject, removePropTypesVariableDeclaration } from '../util/propTypesObject';
 
 const buildFunctionInfo = (name, funcNode, path) => ({ name, funcNode, path });
@@ -32,9 +32,6 @@ const getArrowFunctions = (j, ast) =>
     .paths()
     .map(path => buildFunctionInfo(path.node.id.name, path.node.init, path.parent));
 
-const createVariableDeclaration = (j, kind, id, init) =>
-  j.variableDeclaration(kind, [j.variableDeclarator(id, init)]);
-
 const getPotentialFunctionalComponents = (j, ast) =>
   [
     ...getFunctionDeclarations(j, ast),
@@ -57,13 +54,9 @@ export const addTypeAnnotationToFunction = (j, funcNode, typeAliasName) => {
   if (isIdentifier(props)) {
     props.typeAnnotation = typeAnnotation;
   } else {
-    funcNode.params[0] = j.identifier('props');
-    funcNode.params[0].typeAnnotation = typeAnnotation;
-    if (!isBlockStatement(funcNode.body)) {
-      const returnValue = funcNode.body;
-      funcNode.body = j.blockStatement([j.returnStatement(returnValue)]);
-    }
-    funcNode.body.body.unshift(createVariableDeclaration(j, 'const', props, j.identifier('props')));
+    // applying props.typeAnnotation doesn't seem to work for ObjectPattern
+    // to workarround this we need to do some hacky string replacements to
+    // cover this case. See propsToFlow.js file
   }
 };
 

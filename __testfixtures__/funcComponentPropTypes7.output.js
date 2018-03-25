@@ -19,7 +19,6 @@ type Props = {
   colors?: any[],
 };
 
-const Tooltip = (props: Props) => {
-  const { text, icon } = props;
-  return <div />;
-};
+const Tooltip = ({ text, icon }: Props) => (
+  <div />
+);

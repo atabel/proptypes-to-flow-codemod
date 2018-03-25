@@ -9,9 +9,6 @@ export const isMemberExpression = (node) =>
 export const isLiteral = (node) =>
   node.type === 'Literal';
 
-export const isGenericTypeAnnotation = node =>
-  node.type === 'GenericTypeAnnotation';
-
 export const isReactType = node =>
   REACT_TYPES.has(node.id.name);
 
@@ -23,9 +20,3 @@ export const isImportDeclarationReact = node =>
 
 export const isIdentifier = node =>
   node.type === 'Identifier';
-
-export const isArrowFunction = node =>
-  node.type === 'ArrowFunctionExpression';
-
-export const isBlockStatement = node =>
-  node.type === 'BlockStatement';
