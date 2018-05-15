@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
-class Tooltip extends Component {
+class Tooltip extends React.Component {
   static propTypes = {
     headline: PropTypes.string.isRequired,
     children: PropTypes.node,
@@ -26,7 +26,7 @@ class Tooltip extends Component {
   constructor(props) {
     super(props);
   }
-  
+
   render() {
     return <div />
   }

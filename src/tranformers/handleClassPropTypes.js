@@ -2,6 +2,7 @@ import { get } from 'lodash';
 import isReactClass from '../util/isReactClass';
 import createTypeAnnotation from '../util/createTypeAnnotation';
 import getPropTypesStatement from '../util/getPropTypesStatement';
+import usesJss from '../util/usesJss';
 import { getPropTypesObject, removePropTypesVariableDeclaration } from '../util/propTypesObject';
 
 const createPropsTypeAnnotation = (j, typeAliasName) =>
@@ -27,6 +28,10 @@ export const addTypeAnnotationToClass = (j, node, typeAliasName) => {
     node.superTypeParameters,
     typeAliasName,
   );
+};
+
+export const inlineTypeAnnotationToClass = (j, node, flowPropTypes) => {
+  node.superTypeParameters = j.typeParameterInstantiation([flowPropTypes]);
 };
 
 const getStaticPropTypes = (j, path) =>
@@ -59,22 +64,31 @@ export default (j, ast, options) => {
     const staticPropTypes = getStaticPropTypes(j, path);
     const propTypesStatement = getPropTypesStatement(j, ast, node.id.name);
 
-    if (!staticPropTypes.length && !propTypesStatement.length) {
-      return;
-    }
-
     const propTypes = staticPropTypes.length ? staticPropTypes : propTypesStatement;
-    const propTypesObject = getPropTypesObject(j, ast, propTypes, options);
+    let propTypesObject;
+    if (propTypes.length) {
+      propTypesObject = getPropTypesObject(j, ast, propTypes, options);
 
-    if (options['remove-prop-types']) {
-      removePropTypesVariableDeclaration(j, ast, propTypes);
-      propTypes.remove();
+      if (options['remove-prop-types']) {
+        removePropTypesVariableDeclaration(j, ast, propTypes);
+        propTypes.remove();
+      }
     }
 
     if (checkExistintgPropsType(node)) {
       return;
     }
-    typeAliases.push(createTypeAnnotation(j, propTypesObject, ast, node.id.name, node, path));
+    const hasSheet = usesJss(j, ast, node.id.name);
+
+    typeAliases.push(createTypeAnnotation(
+      j,
+      propTypesObject,
+      ast,
+      node.id.name,
+      node,
+      path,
+      hasSheet,
+    ));
   });
 
   return typeAliases;

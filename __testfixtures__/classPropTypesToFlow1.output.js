@@ -1,11 +1,11 @@
 // @flow
-import React, { Component } from 'react';
-import type { Node } from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 
 type Props = {
   headline?: any,
-  children?: Node,
+  children?: React.Node,
+  el?: React.Element<*>,
   text: string,
   shouldBeShown?: boolean,
   icon?: 'default' | 'custom' | null,
@@ -22,10 +22,11 @@ type Props = {
   arrowDirection?: any,
 };
 
-class Tooltip extends Component<Props> {
+class Tooltip extends React.Component<Props> {
   static propTypes = {
     headline: PropTypes.any,
     children: PropTypes.node,
+    el: PropTypes.element,
     text: PropTypes.string.isRequired,
     shouldBeShown: PropTypes.bool,
     icon: PropTypes.oneOf(['default', 'custom', null]),
@@ -49,7 +50,7 @@ class Tooltip extends Component<Props> {
   constructor(props) {
     super(props);
   }
-  
+
   render() {
     return <div />
   }

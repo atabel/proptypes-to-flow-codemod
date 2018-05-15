@@ -1,10 +1,9 @@
 // @flow
-import React, { Component } from 'react';
-import type { Node } from 'react';
+import * as React from 'react';
 
 type TooltipProps = {
   headline: string,
-  children?: Node,
+  children?: React.Node,
   text?: string,
   shouldBeShown?: boolean,
   icon?: 'default' | 'custom',
@@ -19,7 +18,7 @@ type TooltipProps = {
   colors?: any[],
 };
 
-class Tooltip extends Component<TooltipProps> {
+class Tooltip extends React.Component<TooltipProps> {
   static defaultProps = {
     headline: 'Test'
   };
@@ -38,7 +37,7 @@ type OtherComponentProps = {
   b?: number,
 };
 
-class OtherComponent extends Component<OtherComponentProps> {
+class OtherComponent extends React.Component<OtherComponentProps> {
   render() {
     return <div />
   }
@@ -65,7 +64,7 @@ type ClassComponent3Props = {
   h?: number,
 };
 
-class ClassComponent3 extends Component<ClassComponent3Props> {
+class ClassComponent3 extends React.Component<ClassComponent3Props> {
   render() {
     return <div />
   }

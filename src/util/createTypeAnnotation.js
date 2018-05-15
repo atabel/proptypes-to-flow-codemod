@@ -2,19 +2,22 @@ import { map, flow, some, isNull, negate } from 'lodash/fp';
 import flowTypes from '../constants/flowTypes';
 import { isMemberExpression, isLiteral } from './typeHelpers';
 
-const createAnyTypeAnnotation = j =>
-  j.anyTypeAnnotation();
+const createAnyTypeAnnotation = j => j.anyTypeAnnotation();
 
 const createArrayAnnotation = (j, typeOfArrayAnnotation) => {
   const typeOfArray = typeOfArrayAnnotation || createAnyTypeAnnotation(j);
   return j.arrayTypeAnnotation(typeOfArray);
 };
 
-const createPrimitiveAnnotation = primitiveType => (j) =>
-  j[`${primitiveType}TypeAnnotation`]();
+const createPrimitiveAnnotation = primitiveType => j => j[`${primitiveType}TypeAnnotation`]();
 
-const createGenericTypeAnnotation = type => (j) =>
-  j.genericTypeAnnotation(j.identifier(type), null);
+const createGenericTypeAnnotation = type => j => j.genericTypeAnnotation(j.identifier(type), null);
+
+const createReactTypeAnnotation = (type, params = () => null) => j =>
+  j.genericTypeAnnotation(
+    j.qualifiedTypeIdentifier(j.identifier('React'), j.identifier(type)),
+    params(j),
+  );
 
 const createObjectAnnotation = (j, objectShape) => {
   if (!objectShape) {
@@ -29,10 +32,7 @@ const createObjectAnnotation = (j, objectShape) => {
 };
 
 const createUnionByTypeAnnotation = (j, values) =>
-  flow(
-    map(element => createTypeAnnotation(j, element)),
-    j.unionTypeAnnotation,
-  )(values.elements);
+  flow(map(element => createTypeAnnotation(j, element)), j.unionTypeAnnotation)(values.elements);
 
 const createUnionByValueAnnotation = (j, values) => {
   if (some(negate(isLiteral), values.elements)) {
@@ -59,29 +59,26 @@ const typesMap = {
   shape: createObjectAnnotation,
   oneOf: createUnionByValueAnnotation,
   oneOfType: createUnionByTypeAnnotation,
-  node: createGenericTypeAnnotation('Node'),
-  element: createGenericTypeAnnotation('Element'),
+  node: createReactTypeAnnotation('Node'),
+  element: createReactTypeAnnotation('Element', j => j.typeParameterInstantiation([j.existsTypeAnnotation()])),
   any: createAnyTypeAnnotation,
 };
 
-const parseMemberExpression = (propType) =>
-  [propType.property.name, null];
+const parseMemberExpression = propType => [propType.property.name, null];
 
-const parseCallExpression = (propType) =>
-  [propType.callee.property.name, propType.arguments.length ? propType.arguments[0] : null];
+const parseCallExpression = propType => [
+  propType.callee.property.name,
+  propType.arguments.length ? propType.arguments[0] : null,
+];
 
-const parseUnknown = () =>
-  ['any', null];
+const parseUnknown = () => ['any', null];
 
 const parsersMap = {
   CallExpression: parseCallExpression,
   MemberExpression: parseMemberExpression,
 };
 
-const typesOfValuesSet = new Set([
-  'ObjectExpression',
-  'ArrayExpression',
-]);
+const typesOfValuesSet = new Set(['ObjectExpression', 'ArrayExpression']);
 
 const createTypeAnnotation = (j, propType) => {
   const parser = parsersMap[propType.type] || parseUnknown;
@@ -112,8 +109,32 @@ const getObjectPropertiesFlowTypes = (j, objectNode, alwaysRequired) =>
     };
   }, objectNode.properties);
 
-export default (j, propTypesObjectNode, ast, componentName, node, path) => {
-  const types = getObjectPropertiesFlowTypes(j, propTypesObjectNode);
+export default (
+  j,
+  propTypesObjectNode,
+  ast,
+  componentName,
+  node,
+  path,
+  hasSheet,
+  hasChildren = false,
+) => {
+  const types = propTypesObjectNode ? getObjectPropertiesFlowTypes(j, propTypesObjectNode) : [];
+  if (hasSheet) {
+    types.push({
+      name: j.identifier('classes'),
+      type: j.existsTypeAnnotation(),
+      required: true,
+    });
+  }
+
+  if (hasChildren && !types.some(({ name }) => name.name === 'children')) {
+    types.push({
+      name: j.identifier('children'),
+      type: createReactTypeAnnotation('Node')(j),
+      required: true,
+    });
+  }
 
   return {
     componentName,

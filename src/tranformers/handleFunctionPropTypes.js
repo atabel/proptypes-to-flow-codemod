@@ -1,5 +1,6 @@
 import { reduce } from 'lodash/fp';
 import getPropTypesStatement from '../util/getPropTypesStatement';
+import usesJss from '../util/usesJss';
 import createTypeAnnotation from '../util/createTypeAnnotation';
 import { isIdentifier } from '../util/typeHelpers';
 import { getPropTypesObject, removePropTypesVariableDeclaration } from '../util/propTypesObject';
@@ -63,6 +64,9 @@ export const addTypeAnnotationToFunction = (j, funcNode, typeAliasName) => {
 const checkExistingPropsType = ({ params }) =>
   params.length && params[0].typeAnnotation;
 
+const hasChildren = params =>
+  params[0].type === 'ObjectPattern' && params[0].properties.some(({ key }) => key.name === 'children');
+
 export default (j, ast, options) => {
   const potentialFunctionalComponents = getPotentialFunctionalComponents(j, ast);
   const typeAliases = reduce((types, { name, funcNode, path }) => {
@@ -70,6 +74,8 @@ export default (j, ast, options) => {
     if (!propTypesStatement.length) {
       return types;
     }
+
+    const hasSheet = usesJss(j, ast, name);
 
     const propTypesObject = getPropTypesObject(
       j,
@@ -85,7 +91,16 @@ export default (j, ast, options) => {
       return types;
     }
 
-    const typeAnnotation = createTypeAnnotation(j, propTypesObject, ast, name, funcNode, path);
+    const typeAnnotation = createTypeAnnotation(
+      j,
+      propTypesObject,
+      ast,
+      name,
+      funcNode,
+      path,
+      hasSheet,
+      hasChildren(funcNode.params),
+    );
 
     return [...types, typeAnnotation];
   }, [], potentialFunctionalComponents);

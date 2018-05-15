@@ -1,7 +1,7 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import t from 'prop-types';
 
-class Tooltip extends PureComponent {
+class Tooltip extends React.PureComponent {
   static propTypes = {
     headline: t.string.isRequired,
     children: t.node,

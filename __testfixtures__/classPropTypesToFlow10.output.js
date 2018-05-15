@@ -1,18 +1,17 @@
 // @flow
-import React, { Component } from 'react';
-import type { Node } from 'react';
+import * as React from 'react';
 
 type TooltipProps = {
-  a?: Node,
-  b?: Node,
+  a?: React.Node,
+  b?: React.Node,
 };
 
-class Tooltip extends Component<TooltipProps> {
+class Tooltip extends React.Component<TooltipProps> {
   render() {
     return <div />
   }
 }
 
-type CProps = { a: Node };
+type CProps = { a: React.Node };
 
 const C = ({a}: CProps) => a;

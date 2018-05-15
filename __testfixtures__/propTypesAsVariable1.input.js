@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
-class Tooltip extends Component {
+class Tooltip extends React.Component {
   static defaultProps = {
     headline: 'Test'
   }

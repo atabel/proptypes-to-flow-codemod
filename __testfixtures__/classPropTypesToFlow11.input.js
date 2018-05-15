@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {useSheet} from 'jss';
 
 class Tooltip extends React.Component {
   static propTypes = {
@@ -12,5 +13,4 @@ class Tooltip extends React.Component {
   }
 }
 
-const C = ({a}) => a;
-C.propTypes = {a: PropTypes.node.isRequired};
+export default useSheet(sheet)(Tooltip);

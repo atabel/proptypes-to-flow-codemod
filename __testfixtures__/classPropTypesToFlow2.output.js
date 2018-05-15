@@ -1,10 +1,9 @@
 // @flow
-import React, { Component } from 'react';
-import type { Node } from 'react';
+import * as React from 'react';
 
 type Props = {
   headline: string,
-  children?: Node,
+  children?: React.Node,
   text?: string,
   shouldBeShown?: boolean,
   icon?: 'default' | 'custom',
@@ -19,7 +18,7 @@ type Props = {
   colors?: any[],
 };
 
-class Tooltip extends Component<Props> {
+class Tooltip extends React.Component<Props> {
   static defaultProps = {
     headline: 'Test'
   };

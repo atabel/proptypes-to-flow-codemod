@@ -1,11 +1,10 @@
 // @flow
-import React, { Component } from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
-import type { Node } from 'react';
 
 type TooltipProps = {
   headline: string,
-  children?: Node,
+  children?: React.Node,
   text?: string,
   shouldBeShown?: boolean,
   icon?: 'default' | 'custom',
@@ -37,7 +36,7 @@ const propTypes = {
   colors: PropTypes.array,
 };
 
-class Tooltip extends Component<TooltipProps> {
+class Tooltip extends React.Component<TooltipProps> {
   static propTypes = propTypes;
 
   static defaultProps = {
