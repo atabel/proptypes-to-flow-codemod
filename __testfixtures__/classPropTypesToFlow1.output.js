@@ -15,10 +15,10 @@ type Props = {
     width: number,
     height: number,
   },
-  fonts?: string[],
+  fonts?: Array<string>,
   onShow?: Function,
   position?: {},
-  colors?: any[],
+  colors?: Array<any>,
   arrowDirection?: any,
 };
 

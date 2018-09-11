@@ -6,7 +6,7 @@ const createAnyTypeAnnotation = j => j.anyTypeAnnotation();
 
 const createArrayAnnotation = (j, typeOfArrayAnnotation) => {
   const typeOfArray = typeOfArrayAnnotation || createAnyTypeAnnotation(j);
-  return j.arrayTypeAnnotation(typeOfArray);
+  return j.genericTypeAnnotation(j.identifier('Array'), j.typeParameterInstantiation([typeOfArray]));
 };
 
 const createPrimitiveAnnotation = primitiveType => j => j[`${primitiveType}TypeAnnotation`]();
