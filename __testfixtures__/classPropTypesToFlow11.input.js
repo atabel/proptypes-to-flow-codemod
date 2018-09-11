@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {useSheet} from 'jss';
+import {useSheet, createSheet} from 'jss';
+
+const sheet = createSheet({});
 
 class Tooltip extends React.Component {
   static propTypes = {

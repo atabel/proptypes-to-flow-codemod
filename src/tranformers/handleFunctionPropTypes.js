@@ -1,6 +1,6 @@
 import { reduce } from 'lodash/fp';
 import getPropTypesStatement from '../util/getPropTypesStatement';
-import usesJss from '../util/usesJss';
+import getSheet from '../util/getSheet';
 import createTypeAnnotation from '../util/createTypeAnnotation';
 import { isIdentifier } from '../util/typeHelpers';
 import { getPropTypesObject, removePropTypesVariableDeclaration } from '../util/propTypesObject';
@@ -75,7 +75,7 @@ export default (j, ast, options) => {
       return types;
     }
 
-    const hasSheet = usesJss(j, ast, name);
+    const sheet = getSheet(j, ast, name);
 
     const propTypesObject = getPropTypesObject(
       j,
@@ -98,7 +98,7 @@ export default (j, ast, options) => {
       name,
       funcNode,
       path,
-      hasSheet,
+      sheet,
       hasChildren(funcNode.params),
     );
 

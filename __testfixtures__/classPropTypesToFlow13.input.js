@@ -1,5 +1,7 @@
 import React from 'react';
-import {useSheet} from 'jss';
+import {useSheet, createSheet} from 'jss';
+
+const sheet = createSheet({});
 
 class Tooltip extends React.Component {
   render() {

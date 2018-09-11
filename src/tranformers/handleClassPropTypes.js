@@ -2,7 +2,7 @@ import { get } from 'lodash';
 import isReactClass from '../util/isReactClass';
 import createTypeAnnotation from '../util/createTypeAnnotation';
 import getPropTypesStatement from '../util/getPropTypesStatement';
-import usesJss from '../util/usesJss';
+import getSheet from '../util/getSheet';
 import { getPropTypesObject, removePropTypesVariableDeclaration } from '../util/propTypesObject';
 
 const createPropsTypeAnnotation = (j, typeAliasName) =>
@@ -78,7 +78,7 @@ export default (j, ast, options) => {
     if (checkExistintgPropsType(node)) {
       return;
     }
-    const hasSheet = usesJss(j, ast, node.id.name);
+    const sheet = getSheet(j, ast, node.id.name);
 
     typeAliases.push(createTypeAnnotation(
       j,
@@ -87,7 +87,7 @@ export default (j, ast, options) => {
       node.id.name,
       node,
       path,
-      hasSheet,
+      sheet,
     ));
   });
 

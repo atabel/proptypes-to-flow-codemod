@@ -1,11 +1,13 @@
 // @flow
 import React from 'react';
-import {useSheet} from 'jss';
+import {useSheet, createSheet} from 'jss';
+
+const sheet = createSheet({});
 
 type Props = {
   text?: string,
   icon?: string,
-  classes: *,
+  classes: typeof sheet,
 };
 
 const Tooltip = ({ text, icon }: Props) => (

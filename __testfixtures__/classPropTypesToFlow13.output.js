@@ -1,8 +1,10 @@
 // @flow
 import React from 'react';
-import {useSheet} from 'jss';
+import {useSheet, createSheet} from 'jss';
 
-type Props = { classes: * };
+const sheet = createSheet({});
+
+type Props = { classes: typeof sheet };
 
 class Tooltip extends React.Component<Props> {
   render() {

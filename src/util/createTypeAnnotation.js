@@ -116,14 +116,14 @@ export default (
   componentName,
   node,
   path,
-  hasSheet,
+  sheet,
   hasChildren = false,
 ) => {
   const types = propTypesObjectNode ? getObjectPropertiesFlowTypes(j, propTypesObjectNode) : [];
-  if (hasSheet) {
+  if (sheet) {
     types.push({
       name: j.identifier('classes'),
-      type: j.existsTypeAnnotation(),
+      type: j.typeofTypeAnnotation(j.genericTypeAnnotation(j.identifier(sheet), null)),
       required: true,
     });
   }
